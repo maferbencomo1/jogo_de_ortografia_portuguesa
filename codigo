@@ -1,0 +1,82 @@
+!pip install wonderwords            # Python package para gerar palavras aleatórias em inglês
+!pip install googletrans==4.0.0-rc1 # Python package para traduzir ao português
+!pip install gTTS                   # Python package para usar Google Translate's text-to-speech API.
+!pip install IPython                # Python package para ouvir áudio no Google Collab
+
+
+#Importo Bibliotecas necesarias
+import random
+from wonderwords import RandomWord  # Para gerar palavras sem precisar de listas
+from googletrans import Translator  # Para traduzir
+from gtts import gTTS               # Para coverter texto em audio
+from IPython.display import Audio   # Para reproduzir audio no Google Collab
+from IPython.display import display # Para reproduzir audio no Google Collab
+
+def receber_usuario ():
+  print ("Oi.Vamos practicar sua escuta em português")
+
+def gerar_palavra_em_ingles():
+  palavra = RandomWord()
+  palavra_em_ingles = palavra.word().lower()
+  return palavra_em_ingles
+
+def traduzir_ao_portugues(palavra_em_ingles):
+  traductor = Translator()
+  palavra_em_portugues = traductor.translate(palavra_em_ingles, dest='pt')
+  return palavra_em_portugues
+
+def converte_texto_em_audio(palavra_em_portugues):
+  som_da_palavra_em_portugues = gTTS(text = palavra_em_portugues.text, lang = 'pt', slow = True)
+  return som_da_palavra_em_portugues
+
+def salvar_audio(som_da_palavra_em_portugues):
+  som_salvado = som_da_palavra_em_portugues.save("audio_da_palavra_em_portugues.mp3")
+  return som_salvado
+
+def reproduzir_audio(som_salvado):
+  som_salvado = Audio("audio_da_palavra_em_portugues.mp3", autoplay = True)
+  display(som_salvado)
+
+
+def compare_user_input_with_translated_word(palavra_escrita_por_usuario, palavra_em_portugues):
+    if palavra_escrita_por_usuario == palavra_em_portugues.text:
+        print("Excelente. Sua escrita e escuta são muito boas")
+    else:
+        print("Você errou. A palavra correta é: ", palavra_em_portugues.text)
+
+
+def pregunta_se_quer_continuar():
+    resposta = input("Quer escutar outra palavra? (sim/não): ")
+    while resposta not in ['sim', 'não']:
+        print("Só pode responder sim ou não")
+        resposta = input("Quer escutar outra palavra? (sim/não): ")
+
+    if resposta == "sim":
+        print("Vamos lá")
+        return True
+    else:
+        print("Ok, até logo.")
+        return False
+
+
+
+
+def main ():
+
+  receber_usuario ():
+
+  while True:
+    palavra_em_ingles = gerar_palavra_em_ingles()
+    palavra_em_portugues = traduzir_ao_portugues(palavra_em_ingles)
+    som_da_palavra_em_portugues = converte_texto_em_audio(palavra_em_portugues)
+    som_salvado = salvar_audio(som_da_palavra_em_portugues)
+    reproduzir_audio(som_salvado)
+
+
+    palavra_escrita_por_usuario = input("Escreva o que você ouviu:")
+
+    compare_user_input_with_translated_word(palavra_escrita_por_usuario, palavra_em_portugues)
+    if not pregunta_se_quer_continuar():
+      break
+
+main()
